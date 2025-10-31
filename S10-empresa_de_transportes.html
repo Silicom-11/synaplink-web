@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TransAndes — Caso real CSS (Transiciones & Transformaciones)</title>
+  <style>
+    :root{
+      --bg:#0b1220;      /* fondo oscuro */
+      --panel:#0e1628;   /* panel */
+      --text:#e5e7eb;    /* texto */
+      --muted:#9aa3b2;   /* muting */
+      --brand:#22c55e;   /* verde */
+      --brand2:#38bdf8;  /* celeste */
+      --danger:#ef4444;  /* rojo */
+      --radius:16px; --shadow:0 12px 34px rgba(0,0,0,.35);
+      --speed:240ms; --bezier:cubic-bezier(.2,.8,.2,1);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0; font-family:Inter, ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial; color:var(--text);
+      background:radial-gradient(1200px 700px at 90% -10%, #1a2438 0%, var(--bg) 50%), var(--bg);
+    }
+    a{color:inherit; text-decoration:none}
+
+    /* NAV */
+    header{position:sticky; top:0; z-index:50; backdrop-filter: blur(8px) saturate(140%);
+      background:rgba(11,18,32,.6); border-bottom:1px solid rgba(148,163,184,.18); transition: transform var(--speed) var(--bezier), padding var(--speed) var(--bezier);
+      padding:22px 22px;
+    }
+    header.compacto{ transform: translateY(-6px); padding:12px 22px; }
+    .container{max-width:1100px; margin:0 auto; padding:0 12px}
+    .nav{display:flex; align-items:center; justify-content:space-between}
+    .logo{display:flex; align-items:center; gap:10px; font-weight:700}
+    .logo .truck{width:32px; height:20px; display:inline-grid; place-items:center; border-radius:6px; background:linear-gradient(180deg, var(--brand2), #0ea5e9); transform: translateX(0); transition: transform var(--speed) var(--bezier)}
+    header:hover .logo .truck{ transform: translateX(4px) }
+
+    /* HAMBURGER */
+    .burger{ width:38px; height:30px; display:grid; place-items:center; cursor:pointer }
+    .burger span{ display:block; width:28px; height:3px; background:var(--text); border-radius:2px; transition: transform var(--speed) var(--bezier), opacity var(--speed) var(--bezier); }
+    .burger span:nth-child(1){ transform-origin:left center }
+    .burger span:nth-child(3){ transform-origin:left center }
+    .burger.active span:nth-child(1){ transform: translateY(9px) rotate(45deg) }
+    .burger.active span:nth-child(2){ opacity:0 }
+    .burger.active span:nth-child(3){ transform: translateY(-9px) rotate(-45deg) }
+
+    /* HERO */
+    .hero{padding:42px 0 26px}
+    h1{font-size: clamp(28px, 4vw, 46px); margin:8px 0}
+    .lead{color:var(--muted); max-width:70ch}
+    .actions{display:flex; gap:10px; margin-top:14px}
+    .btn{ --h:46px; display:inline-grid; place-items:center; height:var(--h); padding:0 16px; gap:8px; grid-auto-flow:column;
+      border-radius:12px; color:white; border:0; cursor:pointer; transform: translateY(0);
+      transition: transform var(--speed) var(--bezier), filter var(--speed) var(--bezier);
+      box-shadow:0 10px 24px rgba(34,197,94,.25)
+    }
+    .btn.primary{ background:linear-gradient(180deg, var(--brand), #16a34a) }
+    .btn.secondary{ background:linear-gradient(180deg, var(--brand2), #0284c7) }
+    .btn:hover{ transform: translateY(-2px); filter:brightness(1.05) }
+    .btn:active{ transform: translateY(0) scale(.98) }
+
+    /* GRID */
+    .grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:16px; margin:18px 0 32px}
+    .card{ background:linear-gradient(180deg, #0b1424, #0a0f1a); border:1px solid rgba(148,163,184,.15);
+      border-radius:var(--radius); box-shadow:var(--shadow); padding:16px; position:relative; overflow:hidden;
+    }
+    .card h3{margin:0 0 8px}
+    .card p{color:var(--muted)}
+    .demo{background:rgba(2,6,23,.6); border:1px dashed rgba(148,163,184,.25); border-radius:12px; padding:16px; min-height:90px; display:grid; place-items:center}
+
+    /* 1) Rastreador de envío: camión que avanza por la ruta */
+    .tracker{ width:100%; }
+    .route{ position:relative; height:56px; width:100%; background:#0b1220; border-radius:12px; border:1px solid rgba(148,163,184,.2); overflow:hidden }
+    .route .line{ position:absolute; top:50%; left:16px; right:16px; height:4px; transform: translateY(-50%); background:linear-gradient(90deg, var(--brand), #16a34a); opacity:.35; border-radius:999px }
+    .truckIcon{ position:absolute; top:50%; left:16px; width:38px; height:24px; transform: translate(0,-50%); transition: transform 420ms var(--bezier);
+      display:grid; place-items:center; border-radius:6px; background:linear-gradient(180deg, var(--brand2), #0ea5e9); box-shadow:0 10px 22px rgba(14,165,233,.35);
+    }
+    .pct{display:flex; gap:8px; margin-top:10px}
+    .pct button{ --h:36px; height:var(--h); padding:0 12px; border-radius:10px; background:#182033; color:var(--text); border:1px solid rgba(148,163,184,.2); cursor:pointer; transition: transform var(--speed) var(--bezier) }
+    .pct button:hover{ transform: translateY(-2px) }
+
+    /* 2) Tarjeta de flota con tilt 3D y zoom de foto */
+    .tilt{ perspective:900px }
+    .tile{ background:#0b101a; border:1px solid rgba(148,163,184,.15); border-radius:14px; padding:14px; transform-style:preserve-3d; transition: transform 320ms var(--bezier), box-shadow 320ms var(--bezier) }
+    .tile:hover{ transform: translateY(-4px) rotateX(4deg) rotateY(-4deg); box-shadow:0 20px 50px rgba(0,0,0,.45) }
+    .tile img{ width:100%; height:130px; object-fit:cover; border-radius:10px; transform:scale(1); transition: transform 320ms var(--bezier) }
+    .tile:hover img{ transform:scale(1.06) }
+
+    /* 3) Ruta Flip Card: ida/detalle */
+    .flip{ perspective:1000px }
+    .flip .wrap{ position:relative; width:100%; height:160px; transform-style:preserve-3d; transition: transform 520ms var(--bezier) }
+    .flip .face{ position:absolute; inset:0; display:grid; place-items:center; border-radius:12px; border:1px solid rgba(148,163,184,.2); backface-visibility:hidden; padding:12px }
+    .flip .front{ background:#0b1424 }
+    .flip .back{ background:#061024; transform: rotateY(180deg) }
+    .flip:hover .wrap{ transform: rotateY(180deg) }
+
+    /* 4) Cotizador: panel deslizante */
+    .drawer{ position:fixed; inset:0 0 0 auto; width:min(420px, 92vw); background:#0b101a; border-left:1px solid rgba(148,163,184,.2); box-shadow: -20px 0 50px rgba(0,0,0,.5);
+      transform: translateX(102%); transition: transform 360ms var(--bezier); z-index:60; padding:18px }
+    .drawer.open{ transform: translateX(0) }
+    .backdrop{ position:fixed; inset:0; background:rgba(2,6,23,.55); opacity:0; pointer-events:none; transition: opacity 300ms var(--bezier) }
+    .backdrop.open{ opacity:1; pointer-events:auto }
+    .field{ display:grid; gap:6px; margin:10px 0 }
+    .field input, .field select{ background:#0e1628; border:1px solid rgba(148,163,184,.25); border-radius:10px; padding:10px; color:var(--text) }
+
+    /* 5) Tabla de estados (acordeón por fila) */
+    table{ width:100%; border-collapse:collapse }
+    th,td{ padding:10px; border-bottom:1px solid rgba(148,163,184,.15) }
+    .rowHead{ display:flex; align-items:center; justify-content:space-between; cursor:pointer }
+    .chev{ transition: transform var(--speed) var(--bezier) }
+    .expand{ max-height:0; overflow:hidden; transition:max-height 360ms var(--bezier) }
+    .expand.open{ max-height:160px }
+
+    /* accesibilidad */
+    @media (prefers-reduced-motion: reduce){ *{ transition-duration:1ms !important; animation-duration:1ms !important } }
+  </style>
+</head>
+<body>
+  <header id="hdr">
+    <div class="container nav">
+      <a class="logo" href="#">
+        <span class="truck">🚚</span>
+        <span>Trans<strong>Andes</strong></span>
+      </a>
+      <div class="burger" id="burger" aria-label="Abrir menú" role="button" tabindex="0">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Logística inteligente para la sierra y la costa</h1>
+      <p class="lead">Seguimiento en tiempo real, flota moderna y entregas puerta a puerta. Explora estos componentes UI con <code>transition</code> + <code>transform</code> pensados para una empresa de transporte.</p>
+      <div class="actions">
+        <button class="btn primary" id="abrirCotizador">Cotizar envío</button>
+        <button class="btn secondary" id="iniciarSeguimiento">Iniciar seguimiento</button>
+      </div>
+    </section>
+
+    <section class="grid">
+      <!-- 1) Rastreador de envío -->
+      <article class="card">
+        <h3>1) Rastreador de envío</h3>
+        <p>Mueve el camión a lo largo de la ruta sin animaciones pesadas: solo <code>transform: translateX</code> + <code>transition</code>.</p>
+        <div class="demo tracker">
+          <div class="route" id="route">
+            <div class="line"></div>
+            <div class="truckIcon" id="truck" aria-hidden="true">🚚</div>
+          </div>
+          <div class="pct">
+            <button data-pct="0">0%</button>
+            <button data-pct="25">25%</button>
+            <button data-pct="50">50%</button>
+            <button data-pct="75">75%</button>
+            <button data-pct="100">Entregado</button>
+          </div>
+        </div>
+        <small>Propiedades clave: <code>transform</code>, <code>transition</code>.</small>
+      </article>
+
+      <!-- 2) Fichas de flota -->
+      <article class="card tilt">
+        <h3>2) Flota con tilt 3D</h3>
+        <p>Efecto de profundidad en fichas de camiones y zoom en foto.</p>
+        <div class="demo" style="width:100%">
+          <div class="tile" style="width:100%">
+            <img src="https://picsum.photos/seed/truck/600/400" alt="Camión de la flota" loading="lazy"/>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:8px">
+              <strong>Volvo FH — Euro 6</strong>
+              <span style="color:var(--muted)">Carga: 24t</span>
+            </div>
+          </div>
+        </div>
+        <small>Propiedades clave: <code>perspective</code>, <code>rotateX/Y</code>, <code>scale</code>.</small>
+      </article>
+
+      <!-- 3) Ruta flip card -->
+      <article class="card">
+        <h3>3) Ruta Lima → Cusco (flip)</h3>
+        <p>Pasa el mouse para ver el detalle de paradas.</p>
+        <div class="demo">
+          <div class="flip" style="width:100%">
+            <div class="wrap">
+              <div class="face front">
+                <div>
+                  <strong>Ida:</strong> 1,105 km — 20h aprox.
+                </div>
+              </div>
+              <div class="face back">
+                <div>
+                  <strong>Paradas:</strong> Ica · Nazca · Abancay · Cusco
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <small>Propiedades clave: <code>rotateY(180deg)</code>, <code>backface-visibility</code>.</small>
+      </article>
+
+      <!-- 4) Cotizador deslizante -->
+      <article class="card">
+        <h3>4) Cotizador (panel deslizante)</h3>
+        <p>Panel que aparece desde la derecha con <code>translateX</code>.</p>
+        <div class="demo">
+          <button class="btn secondary" id="abrirCotizador2" style="--h:38px">Abrir cotizador</button>
+        </div>
+        <small>Propiedad clave: <code>transform: translateX()</code>.</small>
+      </article>
+
+      <!-- 5) Tabla de estados con acordeón -->
+      <article class="card">
+        <h3>5) Estados del envío (acordeón por fila)</h3>
+        <p>Expande/cierra detalles con <code>max-height</code> y giro del indicador.</p>
+        <div class="demo" style="width:100%">
+          <table>
+            <thead>
+              <tr><th style="text-align:left">Estado</th><th style="text-align:left">Fecha</th><th></th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="3">
+                  <div class="rowHead" data-row="r1"><span>Recolectado</span><span class="chev">▾</span></div>
+                  <div class="expand" id="r1"><div style="padding:8px; color:var(--muted)">Paquete recogido en Lima, almacén central.</div></div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <div class="rowHead" data-row="r2"><span>En tránsito</span><span class="chev">▾</span></div>
+                  <div class="expand" id="r2"><div style="padding:8px; color:var(--muted)">Ruta Panamericana Sur — Nazca.</div></div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <div class="rowHead" data-row="r3"><span>Entregado</span><span class="chev">▾</span></div>
+                  <div class="expand" id="r3"><div style="padding:8px; color:var(--muted)">Recepción confirmada — Cusco.</div></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <small>Propiedades clave: <code>max-height</code>, <code>transform: rotate()</code>.</small>
+      </article>
+    </section>
+  </main>
+
+  <!-- Drawer / Cotizador -->
+  <div class="backdrop" id="shade"></div>
+  <aside class="drawer" id="drawer" aria-label="Cotizador de envíos">
+    <h3 style="margin-top:0">Cotiza tu envío</h3>
+    <div class="field">
+      <label>Origen</label>
+      <input type="text" placeholder="Lima" />
+    </div>
+    <div class="field">
+      <label>Destino</label>
+      <input type="text" placeholder="Cusco" />
+    </div>
+    <div class="field">
+      <label>Tipo de carga</label>
+      <select>
+        <option>Paquetería</option>
+        <option>Paletizado</option>
+        <option>Granel</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Peso (kg)</label>
+      <input type="number" placeholder="150" />
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px">
+      <button class="btn secondary" id="cerrarCotizador" style="--h:38px; box-shadow:none">Cerrar</button>
+      <button class="btn primary" style="--h:38px">Solicitar cotización</button>
+    </div>
+  </aside>
+
+  <script>
+    // NAV shrink on scroll
+    const hdr = document.getElementById('hdr');
+    let ticking=false; window.addEventListener('scroll', ()=>{
+      if(!ticking){ window.requestAnimationFrame(()=>{ hdr.classList.toggle('compacto', window.scrollY>20); ticking=false; }); ticking=true; }
+    });
+
+    // Burger
+    const burger = document.getElementById('burger');
+    burger?.addEventListener('click', ()=> burger.classList.toggle('active'));
+    burger?.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); burger.classList.toggle('active'); }});
+
+    // Drawer (Cotizador)
+    const drawer = document.getElementById('drawer');
+    const shade = document.getElementById('shade');
+    const abrirBtns = [document.getElementById('abrirCotizador'), document.getElementById('abrirCotizador2')];
+    const cerrar = document.getElementById('cerrarCotizador');
+
+    function openDrawer(){ drawer.classList.add('open'); shade.classList.add('open'); }
+    function closeDrawer(){ drawer.classList.remove('open'); shade.classList.remove('open'); }
+
+    abrirBtns.forEach(btn=> btn?.addEventListener('click', openDrawer));
+    cerrar?.addEventListener('click', closeDrawer);
+    shade?.addEventListener('click', closeDrawer);
+
+    // Rastreador: mover camión por porcentaje
+    const routeEl = document.getElementById('route');
+    const truck = document.getElementById('truck');
+
+    function moveTruck(pct){
+      const left = 16; // padding izquierdo
+      const right = 16; // padding derecho
+      const width = routeEl.clientWidth - left - right - truck.clientWidth; // recorrido disponible
+      const x = Math.max(0, Math.min(width, (pct/100)*width));
+      truck.style.transform = `translate(${x}px, -50%)`;
+    }
+
+    document.querySelectorAll('[data-pct]').forEach(btn=>{
+      btn.addEventListener('click', ()=> moveTruck(parseInt(btn.getAttribute('data-pct'))));
+    });
+
+    // CTA "Iniciar seguimiento" mueve al 25%
+    document.getElementById('iniciarSeguimiento')?.addEventListener('click', ()=> moveTruck(25));
+
+    // Tabla de estados: acordeón
+    document.querySelectorAll('.rowHead').forEach(head=>{
+      head.addEventListener('click', ()=>{
+        const id = head.getAttribute('data-row');
+        const panel = document.getElementById(id);
+        const chev = head.querySelector('.chev');
+        panel.classList.toggle('open');
+        chev.style.transform = panel.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
+      });
+    });
+
+    // Responsivo: recalcular posición del camión en resize manteniendo porcentaje visual (simplemente clamp al contenedor)
+    window.addEventListener('resize', ()=>{
+      const matrix = getComputedStyle(truck).transform;
+      // si no hay transform previo, salir
+      if(!matrix || matrix === 'none') return;
+      // No conocemos el % previo, así que solo clamp al ancho actual manteniendo X actual si cabe
+      const values = matrix.match(/matrix\(([^)]+)\)/);
+      if(values){
+        const parts = values[1].split(',');
+        const currentX = parseFloat(parts[4]) || 0; // e
+        const left = 16, right = 16;
+        const width = routeEl.clientWidth - left - right - truck.clientWidth;
+        const clamped = Math.max(0, Math.min(width, currentX));
+        truck.style.transform = `translate(${clamped}px, -50%)`;
+      }
+    });
+
+    // Accesibilidad básica con teclado para botones de porcentaje
+    document.querySelectorAll('.pct button').forEach(b=>{
+      b.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); b.click(); }});
+    });
+  </script>
+</body>
+</html>
