@@ -85,8 +85,8 @@ export default function Services() {
   ];
 
   const integrations = [
-    { name: 'Yape', logo: '/imagenes/logo-yape.jpg', status: 'Integrado' },
-    { name: 'Google Gemini AI', logo: '/imagenes/synapbot.png', status: 'Integrado' },
+    { name: 'Yape', icon: '💳', status: 'Integrado' },
+    { name: 'Google Gemini AI', logo: '/imagenes/synapbot.gif', status: 'Integrado' },
     { name: 'QR Codes', icon: '📱', status: 'Nativo' },
     { name: 'Firebase Auth', icon: '🔐', status: 'Integrado' },
     { name: 'MongoDB', icon: '🍃', status: 'Integrado' },
