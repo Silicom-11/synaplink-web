@@ -101,6 +101,14 @@ export default function Register() {
   return (
     <div className="auth-container">
       <div className="auth-box auth-box-large">
+        <button 
+          className="btn-back-home" 
+          onClick={() => navigate('/')}
+          type="button"
+        >
+          ← Volver al inicio
+        </button>
+        
         <div className="auth-logo">
           <img src="/imagenes/logo.png" alt="SynapLink" className="auth-logo-img" />
           <h1 className="auth-title">🚀 ¡Bienvenido al futuro!</h1>

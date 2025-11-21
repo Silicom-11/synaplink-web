@@ -51,6 +51,14 @@ export default function Login() {
   return (
     <div className="auth-container">
       <div className="auth-box">
+        <button 
+          className="btn-back-home" 
+          onClick={() => navigate('/')}
+          type="button"
+        >
+          ← Volver al inicio
+        </button>
+        
         <div className="auth-logo">
           <img src="/imagenes/logo.png" alt="SynapLink" className="auth-logo-img" />
           <h1 className="auth-title">¡Bienvenido de nuevo!</h1>
